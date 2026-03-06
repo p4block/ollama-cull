@@ -1,0 +1,68 @@
+# Bjw-s Helm Chart Deployment Values
+# Based on: https://raw.githubusercontent.com/bjw-s-labs/helm-charts/refs/heads/main/charts/library/common/values.schema.json
+
+controllers:
+  culler:
+    type: deployment
+    annotations: {}
+    podAnnotations: {}
+    containers:
+      culler:
+        image:
+          repository: ghcr.io/USERNAME/ollama-ddos
+          tag: latest
+          pullPolicy: IfNotPresent
+        env:
+          - name: OLLAMA_HOST
+            value: http://localhost:11434
+          - name: WHITELIST_MODELS
+            value: "gemma3:12b"
+          - name: POLL_INTERVAL
+            value: "5"
+          - name: ENABLE_WORK_HOURS
+            value: "false"
+          - name: WORK_HOURS_START
+            value: "09:00"
+          - name: WORK_HOURS_END
+            value: "17:00"
+          - name: TZ
+            value: "America/New_York"
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            cpu: 50m
+            memory: 64Mi
+        probes: {}
+
+serviceAccount:
+  create: true
+  name: ollama-culler
+  annotations: {}
+
+podSecurityContext: {}
+securityContext: {}
+
+# Node selector, affinity, tolerations for scheduling
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Topology spread constraints (optional)
+topologySpreadConstraints: []
+
+# Additional pods
+pods: []
+
+# Additional services
+services: []
+
+# Additional deployments
+deployments: []
+
+# Additional StatefulSets
+statefulSets: []
+
+# Additional CronJobs
+cronJobs: []
