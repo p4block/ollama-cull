@@ -174,7 +174,11 @@ func deleteModel(name string) error {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNotFound {
+	if resp.StatusCode == http.StatusNotFound {
+		return nil
+	}
+
+	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("unexpected status from delete: %d", resp.StatusCode)
 	}
 
@@ -219,7 +223,6 @@ func runCull() {
 		slog.Info("Removing model", "model", model.Name)
 
 		if err := deleteModel(model.Name); err != nil {
-			slog.Warn("Failed to delete model", "model", model.Name, "error", err)
 			continue
 		}
 	}
@@ -227,7 +230,7 @@ func runCull() {
 
 func main() {
 	client = &http.Client{Timeout: 30 * time.Second}
-	signalChannel := make(chan os.Signal, 1)
+	signalChannel = make(chan os.Signal, 1)
 	signal.Notify(signalChannel, syscall.SIGINT, syscall.SIGTERM)
 
 	runCuller()
